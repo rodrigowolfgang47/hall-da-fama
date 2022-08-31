@@ -4,7 +4,7 @@
  * Plugin Name:       Hall da Fama
  * Plugin URI:        https://https://github.com/rodrigowolfgang47
  * Description:       Esse plugin consome apis do google sheets.
- * Version:           0.1.3
+ * Version:           0.1.4 
  * Author:            Rodrigo Costa
  * Author URI:        https://https://github.com/rodrigowolfgang47
  * License:           GPL v2 or later
@@ -36,14 +36,34 @@ function run_all_fuction(){
         return;
     }
 
-    update_db();
-    add_new_stundents();
-    delite_non_stundents();
-
+    update_varification();   
     create_icons();
 
     return create_html_tables();
 
+}
+
+function update_varification(){
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'hall_da_fama_pluggin_version';
+
+    $google_sheet_data = get_goooglesheet_data();
+
+    $sheet_rage = count($google_sheet_data);
+    
+    $query = "SELECT email FROM $table_name";
+
+    $result = $wpdb->get_results($query);
+
+    $db_range = count($result);
+
+    if($sheet_rage > $db_range){
+        add_new_stundents();
+        update_db();        
+    }elseif($db_range > $sheet_rage){
+        delite_non_stundents();
+    }
 }
 
 function get_goooglesheet_data(){
@@ -241,7 +261,7 @@ function create_html_tables(){
 
     $term = $_GET['search'];
 
-    $table_title = "<table class='main_table'><tr class='table-title' ><td>Nome</td><td>Pontos</td><td>Linkedin</td><td>Conquistas</td></tr>";
+    $table_title = "<table class='main_table'><tr class='table-title' ><td>Ranking</td><td>Nome</td><td>Score</td><td>Conquistas</td><td>Linkedin</td></tr>";
 
     global $wpdb;                
 
@@ -252,6 +272,14 @@ function create_html_tables(){
     $icones_array = create_icons();
 
     $all_tables_data;
+
+    $i = 1;
+
+    $page = isset( $_GET['cpage'] ) ? abs( (int) $_GET['cpage'] ) : 1;
+
+    $tem = 100;
+
+    $result_page = $tem * $page;
 
     if(isset($term)){
         $all_tables_data = do_a_search($term, $table_name);
@@ -266,7 +294,15 @@ function create_html_tables(){
                 $all_icons .= "<img src='$icon' style='max-width: 30px;'>";
             }
             
-            $all_tables_data .= "<tr><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></td><td>$all_icons</tr>";
+            if($page > 1){
+                $j = $i + $result_page;
+
+                $all_tables_data .= "<tr><td class='nome'>$j °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></td></tr>";
+
+            }else{
+                $all_tables_data .= "<tr><td class='nome'>$i °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></td></tr>";
+            }
+            $i++;
         }
     }
 
@@ -439,7 +475,7 @@ function itens_per_page($table_name){
     $total_query = "SELECT COUNT(1) FROM (${query}) AS combined_table";
     $total = $wpdb->get_var( $total_query );
 
-    $items_per_page = 10;
+    $items_per_page = 100;
     
     $page = isset( $_GET['cpage'] ) ? abs( (int) $_GET['cpage'] ) : 1;
     
@@ -459,7 +495,7 @@ function pagination(){
     $total_query = "SELECT COUNT(1) FROM (${query}) AS combined_table";
     $total = $wpdb->get_var( $total_query );
 
-    $items_per_page = 10;
+    $items_per_page = 100;
     
     $page = isset( $_GET['cpage'] ) ? abs( (int) $_GET['cpage'] ) : 1;
 
