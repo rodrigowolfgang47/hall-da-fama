@@ -30,14 +30,18 @@ function techiepress_add_menu_page(){
 
 function run_all_fuction(){
 
-    if(false === get_option( 'hall_da_fama_pluggin_version' )){
+    if(false === get_option( 'hall_da_fama_pluggin_version' ) and false === get_option( 'icones_hall_da_fama' ) ){
         create_database_table();
+        create_database_table_icon();
         add_new_stundents();
+        add_all_icon_in_db_hall_da_fama();
         return;
     }
-
+    
     update_varification();   
     create_icons();
+
+    update_all_icon();
 
     return create_html_tables();
 
@@ -162,6 +166,39 @@ function create_database_table(){
     add_option( "hall_da_fama_pluggin_version", $hall_da_fama_pluggin_version );
 }
 
+function create_database_table_icon(){
+    
+    global $icones_hall_da_fama;
+
+    $icones_hall_da_fama = "1.0";
+    
+    global $wpdb;
+    
+    $table_name = $wpdb->prefix . 'icones_hall_da_fama';
+
+    $charset_collate = $wpdb->get_charset_collate();
+
+	$sql = "CREATE TABLE $table_name (
+		id mediumint(9) NOT NULL AUTO_INCREMENT,
+		email text,
+		ccnp text,
+		ccnp_enarsi text,
+		ccnp_encor text,
+		ipv6 text,
+		mpls text,
+		sd_wan text,
+		troubleshooting text,
+		bgp text ,
+		PRIMARY KEY  (id)
+	) $charset_collate;";
+
+
+	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+	dbDelta( $sql );
+    
+    add_option( "icones_hall_da_fama", $icones_hall_da_fama );
+}
+
 
 function is_email_in_db($query_search){
 
@@ -201,7 +238,7 @@ function add_new_stundents(){
         $is_student_in_db = is_email_in_db($current_email);
         
         if(false === $is_student_in_db){
-            add_value_in_db($current_student);
+            add_value_in_db_hall_da_fama($current_student);
         }      
     }
     
@@ -209,7 +246,7 @@ function add_new_stundents(){
 
 }
 
-function add_value_in_db($current_student){
+function add_value_in_db_hall_da_fama($current_student){
     
     global $wpdb;
     $table_name = $wpdb->prefix . 'hall_da_fama_pluggin_version';
@@ -228,6 +265,8 @@ function add_value_in_db($current_student){
         
 }
 
+
+
 function update_db(){
     
     global $wpdb;
@@ -243,6 +282,7 @@ function update_db(){
         $email = $google_sheet_data[$i]['Email'];
         $current_points = intval($google_sheet_data[$i]['Pontos']);
         $current_name = $google_sheet_data[$i]['Nome Completo'];
+        $current_linkedin = $google_sheet_data[$i]['Linkedin'];
 
         $results = $wpdb->get_row("SELECT * FROM $table_name WHERE email = '$email' ");
 
@@ -250,7 +290,7 @@ function update_db(){
             // Upadate data        
             $status_p = $wpdb->update($table_name, array('pontos' => $current_points), array('id' => $results->id));
             $status_n = $wpdb->update($table_name, array('nome' => $current_name), array('id' => $results->id));
-
+            $status_l = $wpdb->update($table_name, array('linkedin' => $current_linkedin), array('id' => $results->id));
         }
                     
     }
@@ -297,10 +337,10 @@ function create_html_tables(){
             if($page > 1){
                 $j = $i + $result_page;
 
-                $all_tables_data .= "<tr><td class='nome'>$j °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></td></tr>";
+                $all_tables_data .= "<tr><td class='nome'>$j °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
 
             }else{
-                $all_tables_data .= "<tr><td class='nome'>$i °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></td></tr>";
+                $all_tables_data .= "<tr><td class='nome'>$i °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
             }
             $i++;
         }
@@ -547,31 +587,31 @@ function create_icons(){
 
 
         if($current_student["CCNP ENCOR"] != ""){
-            array_push($icons, $CCNP_ENCOR);
+            $icons["CCNP ENCOR"] = $CCNP_ENCOR;
         }
 
         if($current_student["CCNP ENARSI"] != ""){
-            array_push($icons, $CCNP_ENARSI);
+            $icons["CCNP ENARSI"] = $CCNP_ENARSI;
         }
 
         if($current_student["SD-WAN"] != ""){
-            array_push($icons, $SD_WAN);
+            $icons["SD-WAN"] = $SD_WAN;
         }
 
         if($current_student["TROUBLESHOOTING"] != ""){
-            array_push($icons, $TROUBLESHOOTING);
+            $icons["TROUBLESHOOTING"] = $TROUBLESHOOTING;
         }
 
         if($current_student["BGP"] != ""){
-            array_push($icons, $BGP);
+            $icons["BGP"] = $BGP;
         }
 
         if($current_student["IPV6"] != ""){
-            array_push($icons, $IPV6);
+            $icons["IPV6"] = $IPV6;
         }
 
         if($current_student["MPLS E L3VPN"] != ""){
-            array_push($icons, $MPLS);
+            $icons["MPLS"] = $MPLS;
         }
         $icon_per_student[$current_student["Email"]] = $icons;
     }
@@ -579,6 +619,79 @@ function create_icons(){
     return $icon_per_student;
     
 }
+
+function add_icon_in_db_hall_da_fama($current_student_k, $current_student_v){
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'icones_hall_da_fama';
+
+    
+    $status =  $wpdb->insert(
+        $table_name,
+        array( 
+            // 'ccnp' => $current_student_v["CCNA"], 
+            'email' => $current_student_k, 
+            'ccnp_enarsi' => $current_student_v["CCNP ENARSI"],
+            'ccnp_encor' => $current_student_v['CCNP ENCOR'],
+            'ipv6' => $current_student_v['IPV6'],
+            'mpls' => $current_student_v['MPLS'],
+            'sd_wan' => $current_student_v['SD-WAN'],
+            'troubleshooting' => $current_student_v['TROUBLESHOOTING'],
+            'bgp'  => $current_student_v['BGP'],
+            ) 
+        );
+    var_dump($status);
+        
+}
+
+function add_all_icon_in_db_hall_da_fama(){
+
+    $all_students = create_icons();
+
+    foreach($all_students as $student_k => $student_v){
+        add_icon_in_db_hall_da_fama($student_k, $student_v);
+    }
+
+    return;
+}
+
+function update_all_icon(){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'icones_hall_da_fama';
+
+    $sheets_data = get_goooglesheet_data();
+
+    $all_students = create_icons();
+
+    foreach($all_students as $student_k => $student_v){
+
+        $result = $wpdb->get_row("SELECT * FROM $table_name WHERE email = '$student_k' ");
+
+        if($result){
+            $status_p = $wpdb->update(
+                $table_name,
+                array(
+                    'ccnp_enarsi' => $student_v["CCNP ENARSI"],
+                    'ccnp_encor' => $student_v['CCNP ENCOR'],
+                    'ipv6' => $student_v['IPV6'],
+                    'mpls' => $student_v['MPLS'],
+                    'sd_wan' => $student_v['SD-WAN'],
+                    'troubleshooting' => $student_v['TROUBLESHOOTING'],
+                    'bgp'  => $student_v['BGP'],
+                ),
+                array(
+                    'id' => $result->id
+                )
+            );
+            echo '<pre>';
+            var_dump($status_p);
+            echo '</pre>';
+        }
+
+    }
+
+}
+
 
 
 
