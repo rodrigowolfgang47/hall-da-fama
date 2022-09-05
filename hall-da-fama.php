@@ -154,6 +154,7 @@ function create_database_table(){
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
 		time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 		nome text NOT NULL,
+		img text,
 		email text NOT NULL,
 		pontos int NOT NULL,
 		linkedin text NULL,
@@ -257,6 +258,7 @@ function add_value_in_db_hall_da_fama($current_student){
         array( 
             'time' => current_time( 'mysql' ), 
             'nome' =>  $current_student["Nome Completo"], 
+            'img' =>  $current_student["imagem"], 
             'email' => $current_student["Email"], 
             'pontos' => intval($current_student["Pontos"]), 
             'linkedin' => $current_student["Linkedin"], 
@@ -283,6 +285,7 @@ function update_db(){
         $current_points = intval($google_sheet_data[$i]['Pontos']);
         $current_name = $google_sheet_data[$i]['Nome Completo'];
         $current_linkedin = $google_sheet_data[$i]['Linkedin'];
+        $current_img = $google_sheet_data[$i]['imagem'];
 
         $results = $wpdb->get_row("SELECT * FROM $table_name WHERE email = '$email' ");
 
@@ -291,6 +294,7 @@ function update_db(){
             $status_p = $wpdb->update($table_name, array('pontos' => $current_points), array('id' => $results->id));
             $status_n = $wpdb->update($table_name, array('nome' => $current_name), array('id' => $results->id));
             $status_l = $wpdb->update($table_name, array('linkedin' => $current_linkedin), array('id' => $results->id));
+            $status_i = $wpdb->update($table_name, array('img' => $current_img), array('id' => $results->id));
         }
                     
     }
@@ -306,6 +310,7 @@ function create_html_tables(){
     global $wpdb;                
 
     $table_name = $wpdb->prefix . 'hall_da_fama_pluggin_version';  
+    $table_name_icon = $wpdb->prefix . 'icones_hall_da_fama';
                     
     $table_info = itens_per_page($table_name);
 
@@ -322,25 +327,31 @@ function create_html_tables(){
     $result_page = $tem * $page;
 
     if(isset($term)){
+        $table_title = "<table class='main_table'><tr class='table-title' ><td>Nome</td><td>Score</td><td>Conquistas</td><td>Linkedin</td></tr>";
         $all_tables_data = do_a_search($term, $table_name);
 
     }else{
         foreach($table_info as $info){
-
-            $current_student_icon = $icones_array[$info->email];
+            
             $all_icons = "";
 
-            foreach($current_student_icon as $icon){
-                $all_icons .= "<img src='$icon' style='max-width: 30px;'>";
+            $result = $wpdb->get_row("SELECT * FROM $table_name_icon WHERE email = '$info->email' ");
+
+            $index = 0;
+
+            foreach($result as $k => $v){
+                if($index >= 2){
+                    $all_icons .= "<img src='$v' style='max-width: 30px;'>";
+                }    
+                $index++;
             }
             
             if($page > 1){
                 $j = $i + $result_page;
-
-                $all_tables_data .= "<tr><td class='nome'>$j °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+                $all_tables_data .= "<tr><td class='nome'>$j °</td><td class='nome'><img src='$info->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
 
             }else{
-                $all_tables_data .= "<tr><td class='nome'>$i °</td><td class='nome'>$info->nome</td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+                $all_tables_data .= "<tr><td class='nome'>$i °</td><td class='nome'><img src='$info->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome </td><td class='pontos'>$info->pontos</td><td>$all_icons</td><td><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
             }
             $i++;
         }
@@ -490,16 +501,22 @@ function do_a_search($researched, $table_name){
 
     $icones_array = create_icons();
 
+    $table_name_icon = $wpdb->prefix . 'icones_hall_da_fama';
+
     foreach($search_results as $search_k ){
 
-            $current_student_icon = $icones_array[$search_k->email];
-            $all_icons = "";
+        $result = $wpdb->get_row("SELECT * FROM $table_name_icon WHERE email = '$search_k->email' ");
 
-            foreach($current_student_icon as $icon){
-                $all_icons .= "<img src='$icon' style='max-width: 30px;'>";
-            }
+        $index = 0;
+
+        foreach($result as $k => $v){
+            if($index >= 2){
+                $all_icons .= "<img src='$v' style='max-width: 30px;'>";
+            }    
+            $index++;
+        }
         
-        $all_tables_data .= "<tr><td class='nome'>$search_k->nome</td><td class='pontos'>$search_k->pontos</td><td><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></td><td>$all_icons</tr>";
+        $all_tables_data .= "<tr><td class='nome'><img src='$search_k->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$search_k->nome</td><td class='pontos'>$search_k->pontos</td><td>$all_icons</td><td><a href='$search_k->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
         
     }
     
@@ -683,13 +700,28 @@ function update_all_icon(){
                     'id' => $result->id
                 )
             );
-            echo '<pre>';
-            var_dump($status_p);
-            echo '</pre>';
         }
-
     }
 
+}
+
+function deactivartion_hall_da_fama(){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hall_da_fama_pluggin_version';
+
+    $sql = "DROP TABLE IF EXISTS $table_name";
+    
+    $wpdb->query($sql);
+    
+    delete_option("hall_da_fama_pluggin_version");
+
+    $table_name_icon = $wpdb->prefix . 'icones_hall_da_fama';
+
+    $sql_icon = "DROP TABLE IF EXISTS $table_name_icon";
+    
+    $wpdb->query($sql_icon);
+
+    delete_option('icones_hall_da_fama');
 }
 
 
@@ -698,4 +730,6 @@ function update_all_icon(){
 add_shortcode( 'hall-da-fama',  'run_all_fuction');
 add_shortcode( 'seacher_bar',  'search_bar');
 add_shortcode( 'pagination',  'pagination');
+
+register_deactivation_hook(__FILE__, 'deactivartion_hall_da_fama' );
 
