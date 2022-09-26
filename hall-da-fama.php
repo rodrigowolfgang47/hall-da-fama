@@ -211,8 +211,22 @@ function create_database_table_icon(){
 		mpls text,
 		sd_wan text,
 		troubleshooting text,
-		bgp text ,
-		data_center text ,
+		bgp text,
+		data_center text,
+		marco_zero text,
+		multicast text,
+		qos text,
+		ospf text,
+		eigrp text,
+		wifi text,
+		is_is text,
+		service_provider text,
+		cloud_aws text,
+		ccna text,
+        cloud_marco_zero text,
+        cloud_virtualizacao text,
+        aws_zero text,
+        aws_associate text,
 		PRIMARY KEY  (id)
 	) $charset_collate;";
 
@@ -1159,4 +1173,3 @@ add_shortcode( 'addlinkedin',  'addlinkedin');
 add_shortcode( 'pagination',  'pagination');
 
 register_deactivation_hook(__FILE__, 'deactivartion_hall_da_fama' );
-
