@@ -4,7 +4,7 @@
  * Plugin Name:       Hall da Fama
  * Plugin URI:        https://https://github.com/rodrigowolfgang47
  * Description:       Esse plugin consome apis do google sheets.
- * Version:           0.1.7 
+ * Version:           0.1.8 
  * Author:            Rodrigo Costa
  * Author URI:        https://https://github.com/rodrigowolfgang47
  * License:           GPL v2 or later
@@ -39,29 +39,18 @@ function run_all_fuction(){
         add_all_positions();
         return;
     }
-    
-    update_varification();   
+
+    update_varification();
 
     return create_html_tables();
 
 }
 
 function update_varification(){
-    global $wpdb;
-
-    $table_name = $wpdb->prefix . 'hall_da_fama_pluggin_version';
 
     $google_sheet_data = get_goooglesheet_data();
 
-    $sheet_rage = count($google_sheet_data);
-    
-    $query = "SELECT email FROM $table_name";
-
-    $result = $wpdb->get_results($query);
-
-    $db_range = count($result);
-
-    $ultima_atualizacao = get_goooglesheet_data()[0]['Horas'];
+    $ultima_atualizacao = $google_sheet_data[0]['Horas'];
     date_default_timezone_set('America/Sao_Paulo');
     $hora_atual = date('H:i:s');
 
@@ -69,7 +58,9 @@ function update_varification(){
         add_new_stundents();
         update_db();
         update_all_icon();
-        delite_non_stundents();        
+        delite_non_stundents();
+        add_new_position();           
+        delite_non_stundents_position();
         update_positions();
     }
 }
@@ -186,7 +177,8 @@ function create_database_table_position(){
     $charset_collate = $wpdb->get_charset_collate();
 
 	$sql = "CREATE TABLE $table_name (
-		position mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		id mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        position int NOT NULL,
         aluno text NOT NULL
 	) $charset_collate;";
 
@@ -220,6 +212,7 @@ function create_database_table_icon(){
 		sd_wan text,
 		troubleshooting text,
 		bgp text ,
+		data_center text ,
 		PRIMARY KEY  (id)
 	) $charset_collate;";
 
@@ -252,6 +245,27 @@ function is_email_in_db($query_search){
 
 }
 
+function is_email_in_db_position($query_search, $table_name){
+
+    // Você pode consultar os campos das tavelas aqui
+    // Campos recomendados são e-mail ou nome
+
+    global $wpdb;
+            
+    $table = $wpdb->prefix . "$table_name";
+    
+    $query = "SELECT aluno FROM $table WHERE aluno = '$query_search' ";
+
+    $result = $wpdb->get_results($query);
+
+    if(count($result) > 0){
+        return true;
+    }else{
+        return false;
+    }
+
+}
+
 function add_new_stundents(){
 
     $google_sheet_data = get_goooglesheet_data();
@@ -277,6 +291,42 @@ function add_new_stundents(){
 
 }
 
+function add_new_position(){
+
+    global $wpdb;
+
+    $table_name_position = 'positions';
+
+    $table_name = $wpdb->prefix . 'hall_da_fama_pluggin_version';
+
+    $query = "SELECT email FROM $table_name";
+
+    $results = $wpdb->get_results($query);
+    
+    $table_name = $wpdb->prefix . 'positions';
+
+
+
+    foreach($results as $k => $v){
+
+        $is_email = is_email_in_db_position($v->email, $table_name_position);
+        
+
+        if(false == $is_email){
+
+            $query = "SELECT * FROM $table_name";
+
+            $total_query = "SELECT COUNT(1) FROM (${query}) AS combined_table";
+        
+            $total = $wpdb->get_var( $total_query );
+        
+            $rankig = $total + 1;
+
+            add_value_in_db_positions($v->email, $rankig);
+        }
+    }
+}
+    
 function add_value_in_db_hall_da_fama($current_student){
     
     global $wpdb;
@@ -297,6 +347,19 @@ function add_value_in_db_hall_da_fama($current_student){
         
 }
 
+function add_value_in_db_positions($current_student, $position){
+    
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'positions';
+
+    $status =  $wpdb->insert(
+        $table_name,
+        array(
+            'position' => $position,
+            'aluno' => $current_student
+            ) 
+    );
+}
 
 function add_all_positions(){
 
@@ -310,14 +373,19 @@ function add_all_positions(){
     
     $table_name = $wpdb->prefix . 'positions';
 
+    $i = 1;
+
     foreach($results as $result){
 
         $status =  $wpdb->insert(
             $table_name,
             array( 
-                'aluno' => $result->email 
-                ) 
+                'position' => $i,
+                'aluno' => $result->email
+                )
         );
+
+        $i++;
     }
 
 }
@@ -489,9 +557,6 @@ function create_html_tables_mobile(){
                                 </div>
                             </div>
                         </div>
-                        <div class='veja-mais'>
-                            Veja mais
-                        </div>
                     </div>
                 ";
                 
@@ -528,9 +593,6 @@ function create_html_tables_mobile(){
                                 $all_icons
                             </div>
                         </div>
-                    </div>
-                    <div class='veja-mais'>
-                        Veja mais
                     </div>
                 </div>
                 ";
@@ -600,6 +662,33 @@ function delite_non_stundents(){
     
             $deleted =  $wpdb->delete($table_name, array( 'id' => $results->id ));  
     
+        }
+    }
+
+    return;
+    
+}
+
+function delite_non_stundents_position(){
+
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'positions';
+
+    $query = "SELECT aluno FROM $table_name";
+
+    $results = $wpdb->get_results($query);
+
+    foreach($results as $k){
+
+        $is_email = is_email_in_db($k->aluno);
+
+
+        if(false == $is_email){
+
+            $results = $wpdb->get_row("SELECT * FROM $table_name WHERE aluno = '$k->aluno' ");
+    
+            $deleted =  $wpdb->delete($table_name, array( 'id' => $results->id )); 
         }
     }
 
@@ -712,6 +801,109 @@ function do_a_search($researched, $table_name){
 
 }
 
+
+function do_a_search_mobile($researched, $table_name){
+
+    global $wpdb;
+
+    $researched = str_replace("da", "", $researched);
+    $researched = str_replace("dos", "", $researched);
+    $researched = str_replace("do", "", $researched);
+    $researched = str_replace("Da", "", $researched);
+    $researched = str_replace("Dos", "", $researched);
+    $researched = str_replace("Do", "", $researched);
+    $researched = str_replace("De", "", $researched);
+    $researched = str_replace("de", "", $researched);
+
+    
+    $expTerm = explode(" ", $researched);
+
+    $has_empity_str = in_array(" ", $expTerm);
+
+    $search = "(";
+
+    foreach($expTerm as $ek=>$ev){
+
+        if($ev !==  " " and $ev !==  ""){
+            if($ek == 0 ){
+                $search .= "nome LIKE '%".$ev."%' ";
+            }else{
+                $search .= " OR nome LIKE '%".$ev."%' ";
+            }
+        }
+
+    }
+
+    $search .= ")";
+
+    $query = "SELECT * FROM $table_name WHERE".$search."ORDER BY pontos DESC";
+
+    $search_results = $wpdb->get_results($query);
+
+    $all_tables_data;
+
+    $icones_array = create_icons();
+
+    $table_name_icon = $wpdb->prefix . 'icones_hall_da_fama';
+
+    $positions = $wpdb->prefix . 'positions';
+
+    foreach($search_results as $search_k ){
+
+        $result = $wpdb->get_row("SELECT * FROM $table_name_icon WHERE email = '$search_k->email' ");
+        
+        $result_position = $wpdb->get_row("SELECT position FROM $positions WHERE aluno = '$search_k->email' ");
+
+        $index = 0;
+
+        foreach($result as $k => $v){
+            if($index >= 2){
+                $all_icons .= "<img src='$v' style='max-width: 30px;'>";
+            }    
+            $index++;
+        }
+        
+        $all_tables_data .= $all_tables_data .= "
+        <div class='students'>
+            <div class='estudantes'>
+                <h3 class='ranking'>$result_position->position °</h3>
+                <section class='nome'>
+                    <img src='$info->img'
+                        alt='Foto'>
+                    <h3>$info->nome</h3>
+                </section>
+            </div>
+            <div class='score-conquistas'>
+                <div class='title-other'>
+                    <div>
+                        Score
+                    </div>
+                    <div>
+                        Linkedin
+                    </div>
+                    <div class='conquistas'>
+                        Conquistas
+                    </div>
+                </div>
+                <div class='conquitas-score'>
+                    <div class='score'>$info->pontos</div>
+                    <div class='linkedin'>
+                        <a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a>
+                    </div>
+                    <div class='conquistas-itens scroll'>
+                        $all_icons
+                    </div>
+                </div>
+            </div>
+        </div>
+    ";
+        
+    }
+    
+    return $all_tables_data;
+
+}
+
 function itens_per_page($table_name){
 
     global $wpdb;
@@ -778,7 +970,10 @@ function create_icons(){
 
     $BGP = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/BGP.png";
 
+    $data_center = 'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/VIRTUALIZACAO-EM-DATA-CENTER.png';
+
     $sheets_data = get_goooglesheet_data();
+
 
     
     $sheet_rage = count($sheets_data);
@@ -818,6 +1013,10 @@ function create_icons(){
         if($current_student["MPLS E L3VPN"] != ""){
             $icons["MPLS"] = $MPLS;
         }
+
+        if($current_student["Data Center"] != ""){
+            $icons["DATA CENTER"] = $data_center;
+        }
         $icon_per_student[$current_student["Email"]] = $icons;
     }
 
@@ -843,6 +1042,7 @@ function add_icon_in_db_hall_da_fama($current_student_k, $current_student_v){
             'sd_wan' => $current_student_v['SD-WAN'],
             'troubleshooting' => $current_student_v['TROUBLESHOOTING'],
             'bgp'  => $current_student_v['BGP'],
+            'data_center' => $current_student_v['DATA CENTER'],
             ) 
         );        
 }
@@ -881,6 +1081,7 @@ function update_all_icon(){
                     'sd_wan' => $student_v['SD-WAN'],
                     'troubleshooting' => $student_v['TROUBLESHOOTING'],
                     'bgp'  => $student_v['BGP'],
+                    'data_center' => $student_v['DATA CENTER'],
                 ),
                 array(
                     'id' => $result->id
@@ -901,16 +1102,11 @@ function update_positions(){
     
     $table_name = $wpdb->prefix . 'positions';
 
-    $result_position = $wpdb->get_row("SELECT * FROM $table_name WHERE position = 1 ");
-
-    // echo '<pre>';
-    // var_dump($results);
-    // echo '</pre>';
-
     $index = 1;
 
     foreach($results as $result){
-            $status_p = $wpdb->update($table_name, array('aluno' => $result->email), array('position' => $index ) );
+
+            $status_p = $wpdb->update($table_name, array('aluno' => $result->email, 'position' => $index ), array('id' => $result->id ) );
             $index++;
     }
 }
