@@ -54,7 +54,7 @@ function update_varification(){
     date_default_timezone_set('America/Sao_Paulo');
     $hora_atual = date('H:i:s');
 
-    if($hora_atual - $ultima_atualizacao >= 1){
+    if($hora_atual - $ultima_atualizacao >= 12){
         add_new_stundents();
         update_db();
         update_all_icon();
@@ -481,9 +481,9 @@ function create_html_tables(){
             }
 
             if($info->img){
-                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$info->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome</td><td class='pontos'>$info->pontos</td><td class='icones-conquistas'>$all_icons</td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$info->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome</td><td class='pontos'>$info->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
             }else{
-                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/blank-profile-picture-gb359e0966_640.png' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome</td><td class='pontos'>$info->pontos</td><td class='icones-conquistas'>$all_icons</td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/blank-profile-picture-gb359e0966_640.png' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome</td><td class='pontos'>$info->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
             }
 
 
@@ -516,7 +516,7 @@ function create_html_tables_mobile(){
     $positions = $wpdb->prefix . 'positions';
 
     if(isset($term)){
-        $all_tables_data = do_a_search($term, $table_name);
+        $all_tables_data = do_a_search_mobile($term, $table_name);
 
     }else{
         foreach($table_info as $info){
@@ -525,7 +525,7 @@ function create_html_tables_mobile(){
 
             $result = $wpdb->get_row("SELECT * FROM $table_name_icon WHERE email = '$info->email' ");
 
-            $result_position = $wpdb->get_row("SELECT position FROM $positions WHERE aluno = '$info->email' ");
+            $result_position = $wpdb->get_row("SELECT position FROM $positions WHERE aluno = '$info->email'");
 
             $index = 0;
 
@@ -794,6 +794,8 @@ function do_a_search($researched, $table_name){
 
     foreach($search_results as $search_k ){
 
+        $all_icons = "";
+
         $result = $wpdb->get_row("SELECT * FROM $table_name_icon WHERE email = '$search_k->email' ");
         
         $result_position = $wpdb->get_row("SELECT position FROM $positions WHERE aluno = '$search_k->email' ");
@@ -807,7 +809,7 @@ function do_a_search($researched, $table_name){
             $index++;
         }
         
-        $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$search_k->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$search_k->nome</td><td class='pontos'>$search_k->pontos</td><td>$all_icons</td><td class='linkedin-h'><a href='$search_k->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+        $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$search_k->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$search_k->nome</td><td class='pontos'>$search_k->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$search_k->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
         
     }
     
@@ -864,6 +866,8 @@ function do_a_search_mobile($researched, $table_name){
 
     foreach($search_results as $search_k ){
 
+        $all_icons = "";
+
         $result = $wpdb->get_row("SELECT * FROM $table_name_icon WHERE email = '$search_k->email' ");
         
         $result_position = $wpdb->get_row("SELECT position FROM $positions WHERE aluno = '$search_k->email' ");
@@ -877,14 +881,14 @@ function do_a_search_mobile($researched, $table_name){
             $index++;
         }
         
-        $all_tables_data .= $all_tables_data .= "
+        $all_tables_data .= "   
         <div class='students'>
             <div class='estudantes'>
                 <h3 class='ranking'>$result_position->position °</h3>
                 <section class='nome'>
-                    <img src='$info->img'
+                    <img src='$search_k->img'
                         alt='Foto'>
-                    <h3>$info->nome</h3>
+                    <h3>$search_k->nome</h3>
                 </section>
             </div>
             <div class='score-conquistas'>
@@ -900,9 +904,9 @@ function do_a_search_mobile($researched, $table_name){
                     </div>
                 </div>
                 <div class='conquitas-score'>
-                    <div class='score'>$info->pontos</div>
+                    <div class='score'>$search_k->pontos</div>
                     <div class='linkedin'>
-                        <a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a>
+                        <a href='$search_k->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a>
                     </div>
                     <div class='conquistas-itens scroll'>
                         $all_icons
@@ -974,7 +978,7 @@ function create_icons(){
 
     $CCNP_ENCOR = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/CCNP-ENCOR.png";
 
-    $IPV6 = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/IPV6.png";
+    $IPV6 = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/IMPLEMENTANDO-IPV6.png";
 
     $MPLS = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/MPLS.png";
 
@@ -985,6 +989,24 @@ function create_icons(){
     $BGP = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/BGP.png";
 
     $data_center = 'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/VIRTUALIZACAO-EM-DATA-CENTER.png';
+
+    $marco_zero =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/MARCO-ZERO.png';
+
+    $multicast =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/IMPLEMENTANDO-MULTICAST.png';
+
+    $qos =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/INTRODUCAO-A-QOS.png';
+    
+    $ospf =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/OSPF.png';
+
+    $eigrp =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/EIGRP.png';
+
+    $wifi =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/IMPLEMENTANDO-WIFI.png';
+
+    $is_is =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/INTRODUCAO-AO-IS-IS.png';
+
+    $service_provider =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/SERVICE-PROVIDER.png';
+
+    $CCNA =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/CCNA.png';
 
     $sheets_data = get_goooglesheet_data();
 
@@ -1031,6 +1053,47 @@ function create_icons(){
         if($current_student["Data Center"] != ""){
             $icons["DATA CENTER"] = $data_center;
         }
+
+        if($current_student["Marco Zero - Cisco"] != ""){
+            $icons["MARCO ZERO"] = $marco_zero;
+        }
+        
+        if($current_student["Implementando Multicast"] != ""){
+            $icons["MULTICAST"] = $multicast;
+        }
+
+        if($current_student["QOS"] != ""){
+            $icons["QOS"] = $qos;
+        }
+
+        if($current_student["OSPF"] != ""){
+            $icons["OSPF"] = $ospf;
+        }
+
+        if($current_student["EIGRP"] != ""){
+            $icons["EIGRP"] = $eigrp;
+        }
+
+        if($current_student["WIFI"] != ""){
+            $icons["WIFI"] = $wifi; 
+        }
+
+        if($current_student["WIFI"] != ""){
+            $icons["WIFI"] = $wifi; 
+        }
+        
+        if($current_student["IS-IS"] != ""){
+            $icons["IS-IS"] = $is_is; 
+        }
+
+        if($current_student["SERVICE-PROVIDER"] != ""){
+            $icons["SERVICE-PROVIDER"] = $service_provider; 
+        }
+
+        if($current_student["CCNA"] != ""){
+            $icons["CCNA"] = $CCNA; 
+        }
+
         $icon_per_student[$current_student["Email"]] = $icons;
     }
 
@@ -1057,6 +1120,15 @@ function add_icon_in_db_hall_da_fama($current_student_k, $current_student_v){
             'troubleshooting' => $current_student_v['TROUBLESHOOTING'],
             'bgp'  => $current_student_v['BGP'],
             'data_center' => $current_student_v['DATA CENTER'],
+            'marco_zero' => $current_student_v['MARCO ZERO'],
+            'multicast' => $current_student_v['MULTICAST'],
+            'qos' => $current_student_v['QOS'],
+            'ospf' => $current_student_v['OSPF'],
+            'eigrp' => $current_student_v['EIGRP'],
+            'wifi' => $current_student_v['WIFI'],
+            'is_is' => $current_student_v['IS-IS'],
+            'service_provider' => $current_student_v['SERVICE-PROVIDER'],
+            'ccna' => $current_student_v['CCNA'],
             ) 
         );        
 }
@@ -1096,6 +1168,15 @@ function update_all_icon(){
                     'troubleshooting' => $student_v['TROUBLESHOOTING'],
                     'bgp'  => $student_v['BGP'],
                     'data_center' => $student_v['DATA CENTER'],
+                    'marco_zero' => $student_v['MARCO ZERO'],
+                    'multicast' => $student_v['MULTICAST'],
+                    'qos' => $student_v['QOS'],
+                    'ospf' => $student_v['OSPF'],
+                    'eigrp' => $student_v['EIGRP'],
+                    'wifi' => $student_v['WIFI'],
+                    'is_is' => $student_v['IS-IS'],
+                    'service_provider' => $student_v['SERVICE-PROVIDER'],
+                    'ccna' => $student_v['CCNA'],
                 ),
                 array(
                     'id' => $result->id
