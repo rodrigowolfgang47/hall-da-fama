@@ -4,7 +4,7 @@
  * Plugin Name:       Hall da Fama
  * Plugin URI:        https://https://github.com/rodrigowolfgang47
  * Description:       Esse plugin consome apis do google sheets.
- * Version:           0.1.8 
+ * Version:           1.0.0 
  * Author:            Rodrigo Costa
  * Author URI:        https://https://github.com/rodrigowolfgang47
  * License:           GPL v2 or later
@@ -210,6 +210,7 @@ function create_database_table_icon(){
 	$sql = "CREATE TABLE $table_name (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
 		email text,
+        ccna text,
 		ccnp text,
 		ccnp_enarsi text,
 		ccnp_encor text,
@@ -228,11 +229,21 @@ function create_database_table_icon(){
 		is_is text,
 		service_provider text,
 		cloud_aws text,
-		ccna text,
         cloud_marco_zero text,
         cloud_virtualizacao text,
         aws_zero text,
         aws_associate text,
+        ciber_marco_zero text,
+        nse1 text,
+        nse2 text,
+        nse3 text,
+        nse4 text,
+        nse7 text,
+        mk_marco_zero text,
+        mk_mtcna text,
+        mk_bgp text,
+        mk_ipv6 text,
+        mtcre text,
 		PRIMARY KEY  (id)
 	) $charset_collate;";
 
@@ -498,9 +509,9 @@ function create_html_tables(){
             }
 
             if($info->img){
-                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$info->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome</td><td class='pontos'>$info->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$info->img' alt='foto' style='max-width: 45px; border-radius: 100px;'><h4 class='nome-text' >$info->nome</h4></td><td class='pontos'>$info->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://hackone.com.br/wp-content/uploads/2022/10/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
             }else{
-                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/blank-profile-picture-gb359e0966_640.png' alt='foto' style='max-width: 45px; border-radius: 100px;'>$info->nome</td><td class='pontos'>$info->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+                $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='https://hackone.com.br/wp-content/uploads/2022/10/blank-profile-picture-gb359e0966_640-1.png' alt='foto' style='max-width: 45px; border-radius: 100px;'><h4>$info->nome</h4></td><td class='pontos'>$info->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$info->linkedin' target='_blank'><img src='https://hackone.com.br/wp-content/uploads/2022/10/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
             }
 
 
@@ -561,7 +572,7 @@ function create_html_tables_mobile(){
                             <section class='nome'>
                                 <img src='$info->img'
                                     alt='Foto'>
-                                <h3>$info->nome</h3>
+                                <h3 class='nome-text' >$info->nome</h3>
                             </section>
                         </div>
                         <div class='score-conquistas'>
@@ -579,7 +590,7 @@ function create_html_tables_mobile(){
                             <div class='conquitas-score'>
                                 <div class='score'>$info->pontos</div>
                                 <div class='linkedin'>
-                                    <a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a>
+                                    <a href='$info->linkedin' target='_blank'><img src='https://hackone.com.br/wp-content/uploads/2022/10/linkedin.png' style='max-width: 30px; border: none;'></a>
                                 </div>
                                 <div class='conquistas-itens scroll'>
                                     $all_icons
@@ -596,9 +607,9 @@ function create_html_tables_mobile(){
                     <div class='estudantes'>
                         <h3 class='ranking'>$result_position->position °</h3>
                         <section class='nome'>
-                            <img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/blank-profile-picture-gb359e0966_640.png'
+                            <img src='https://hackone.com.br/wp-content/uploads/2022/10/blank-profile-picture-gb359e0966_640-1.png'
                                 alt='Foto'>
-                            <h3>$info->nome</h3>
+                            <h3 class='nome-text' >$info->nome</h3>
                         </section>
                     </div>
                     <div class='score-conquistas'>
@@ -616,7 +627,7 @@ function create_html_tables_mobile(){
                         <div class='conquitas-score'>
                             <div class='score'>$info->pontos</div>
                             <div class='linkedin'>
-                                <a href='$info->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a>
+                                <a href='$info->linkedin' target='_blank'><img src='https://hackone.com.br/wp-content/uploads/2022/10/linkedin.png' style='max-width: 30px; border: none;'></a>
                             </div>
                             <div class='conquistas-itens scroll'>
                                 $all_icons
@@ -753,7 +764,7 @@ function search_bar(){
         gap: 1rem;'>
         <input type='text' name='search' value='$term' class='campo-de-pesquisa'>
         <input type='submit' class='pesquisa' value='Pesquisar'>
-        <a href='https://sandbox.ccielucaspalma.com.br/hall-da-fama-layout' class='botao-voltar'>X</a>
+        <a href='https://hackone.com.br/hall-da-fama' class='botao-voltar'>X</a>
         </form>
         <li class = 'form-error' style ='display:none;'>O campo precisa conter algum valor</li>
         ";
@@ -823,7 +834,7 @@ function do_a_search($researched, $table_name){
             $index++;
         }
         
-        $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$search_k->img' alt='foto' style='max-width: 45px; border-radius: 100px;'>$search_k->nome</td><td class='pontos'>$search_k->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$search_k->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
+        $all_tables_data .= "<tr><td class='classfication'>$result_position->position °</td><td class='nome'><img src='$search_k->img' alt='foto' style='max-width: 45px; border-radius: 100px;'><h4 class='nome-text'>$search_k->nome</h4></td><td class='pontos'>$search_k->pontos</td><td class= 'icones-conquistas'><div class='icones-container'>$all_icons</div></td><td class='linkedin-h'><a href='$search_k->linkedin' target='_blank'><img src='https://hackone.com.br/wp-content/uploads/2022/10/linkedin.png' style='max-width: 30px; border: none;'></a></td></tr>";
         
     }
     
@@ -900,7 +911,7 @@ function do_a_search_mobile($researched, $table_name){
                 <section class='nome'>
                     <img src='$search_k->img'
                         alt='Foto'>
-                    <h3>$search_k->nome</h3>
+                    <h3 class='nome-text'>$search_k->nome</h3>
                 </section>
             </div>
             <div class='score-conquistas'>
@@ -918,7 +929,7 @@ function do_a_search_mobile($researched, $table_name){
                 <div class='conquitas-score'>
                     <div class='score'>$search_k->pontos</div>
                     <div class='linkedin'>
-                        <a href='$search_k->linkedin' target='_blank'><img src='https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/linkedin.png' style='max-width: 30px; border: none;'></a>
+                        <a href='$search_k->linkedin' target='_blank'><img src='https://hackone.com.br/wp-content/uploads/2022/10/linkedin.png' style='max-width: 30px; border: none;'></a>
                     </div>
                     <div class='conquistas-itens scroll'>
                         $all_icons
@@ -986,39 +997,69 @@ function pagination(){
 
 function create_icons($google_sheet_data){
 
-    $CCNP_ENARSI = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/CCNP-ENARSI.png";
+    $CCNA =  'https://hackone.com.br/wp-content/uploads/2022/10/CCNA.png';
 
-    $CCNP_ENCOR = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/CCNP-ENCOR.png";
+    $CCNP_ENCOR = "https://hackone.com.br/wp-content/uploads/2022/10/CCNP-ENCOR.png";
 
-    $IPV6 = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/IMPLEMENTANDO-IPV6.png";
+    $CCNP_ENARSI = "https://hackone.com.br/wp-content/uploads/2022/10/CCNP-ENARSI.png";
 
-    $MPLS = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/MPLS.png";
+    $SD_WAN = "https://hackone.com.br/wp-content/uploads/2022/10/SD-WAN.png";
 
-    $SD_WAN = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/SD-WAN.png";
+    $TROUBLESHOOTING = "https://hackone.com.br/wp-content/uploads/2022/10/TROUBLESHOOTING.png";
 
-    $TROUBLESHOOTING = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/TROUBLESHOOTING.png";
+    $BGP = "https://hackone.com.br/wp-content/uploads/2022/10/BGP.png";
 
-    $BGP = "https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/08/BGP.png";
+    $IPV6 = "https://hackone.com.br/wp-content/uploads/2022/10/IMPLEMENTANDO-IPV6.png";
 
-    $data_center = 'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/VIRTUALIZACAO-EM-DATA-CENTER.png';
+    $MPLS = "https://hackone.com.br/wp-content/uploads/2022/10/MPLS.png";
 
-    $marco_zero =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/MARCO-ZERO.png';
+    $data_center = 'https://hackone.com.br/wp-content/uploads/2022/10/VIRTUALIZACAO-EM-DATA-CENTER.png';
 
-    $multicast =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/IMPLEMENTANDO-MULTICAST.png';
+    $marco_zero =  'https://hackone.com.br/wp-content/uploads/2022/10/MARCO-ZERO.png';
 
-    $qos =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/INTRODUCAO-A-QOS.png';
+    $multicast =  'https://hackone.com.br/wp-content/uploads/2022/10/IMPLEMENTANDO-MULTICAST.png';
+
+    $qos =  'https://hackone.com.br/wp-content/uploads/2022/10/INTRODUCAO-A-QOS.png';
     
-    $ospf =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/OSPF.png';
+    $ospf =  'https://hackone.com.br/wp-content/uploads/2022/10/OSPF.png';
 
-    $eigrp =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/EIGRP.png';
+    $eigrp =  'https://hackone.com.br/wp-content/uploads/2022/10/EIGRP.png';
 
-    $wifi =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/IMPLEMENTANDO-WIFI.png';
+    $wifi =  'https://hackone.com.br/wp-content/uploads/2022/10/IMPLEMENTANDO-WIFI.png';
 
-    $is_is =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/INTRODUCAO-AO-IS-IS.png';
+    $is_is =  'https://hackone.com.br/wp-content/uploads/2022/10/INTRODUCAO-AO-IS-IS.png';
 
-    $service_provider =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/SERVICE-PROVIDER.png';
+    $service_provider =  'https://hackone.com.br/wp-content/uploads/2022/10/SERVICE-PROVIDER.png';
 
-    $CCNA =  'https://sandbox.ccielucaspalma.com.br/wp-content/uploads/2022/09/CCNA.png';
+    $cloud_AWS_Practitioner =  'https://hackone.com.br/wp-content/uploads/2022/10/CLOUD-AWS-PRAC.png';
+    
+    $cloud_marco_zero =  'https://hackone.com.br/wp-content/uploads/2022/10/CLOUD-MARCO-ZERO.png';
+    
+    $cloud_virtualizacao =  'https://hackone.com.br/wp-content/uploads/2022/10/CLOUD-VIRTUALIZATION.png';
+    
+    $aws_zero =  'https://hackone.com.br/wp-content/uploads/2022/10/AWS-ZERO-TO-HERO.png';
+    
+    $aws_associate =  'https://hackone.com.br/wp-content/uploads/2022/10/AWS-ASSOCIATE.png';
+    
+    $ciber_marco_zero =  'https://hackone.com.br/wp-content/uploads/2022/10/CIBER-MARCO-ZERO.png';
+    
+    $nse1 =  'https://hackone.com.br/wp-content/uploads/2022/10/NSE1.png';
+    
+    $nse2 =  'https://hackone.com.br/wp-content/uploads/2022/10/NSE2.png';
+    
+    $nse3 =  'https://hackone.com.br/wp-content/uploads/2022/10/NSE3.png';
+    
+    $nse7 =  'https://hackone.com.br/wp-content/uploads/2022/10/NSE7.png';
+    
+    $mk_marco_zero =  'https://hackone.com.br/wp-content/uploads/2022/10/MK-MARCO-ZERO.png';
+    
+    $mk_mtcna =  'https://hackone.com.br/wp-content/uploads/2022/10/MK-MTCNA.png';
+    
+    $mk_bgp =  'https://hackone.com.br/wp-content/uploads/2022/10/MK-BGP-AVANCADO.png';
+    
+    $mk_ipv6 =  'https://hackone.com.br/wp-content/uploads/2022/10/MK-IPV6-AVANCADO.png';
+    
+    $mtcre =  'https://hackone.com.br/wp-content/uploads/2022/10/MTCRE.png';
 
     $sheets_data = $google_sheet_data;
 
@@ -1034,6 +1075,9 @@ function create_icons($google_sheet_data){
 
         $icons["Pontos"] = $current_student["Pontos"];
 
+        if($current_student["CCNA"] != ""){
+            $icons["CCNA"] = $CCNA; 
+        }  
 
         if($current_student["CCNP ENCOR"] != ""){
             $icons["CCNP ENCOR"] = $CCNP_ENCOR;
@@ -1090,10 +1134,6 @@ function create_icons($google_sheet_data){
         if($current_student["WIFI"] != ""){
             $icons["WIFI"] = $wifi; 
         }
-
-        if($current_student["WIFI"] != ""){
-            $icons["WIFI"] = $wifi; 
-        }
         
         if($current_student["IS-IS"] != ""){
             $icons["IS-IS"] = $is_is; 
@@ -1103,9 +1143,69 @@ function create_icons($google_sheet_data){
             $icons["SERVICE-PROVIDER"] = $service_provider; 
         }
 
-        if($current_student["CCNA"] != ""){
-            $icons["CCNA"] = $CCNA; 
-        }      
+        if($current_student["Cloud-AWS-Practitioner"] != ""){
+            $icons["Cloud-AWS"] = $cloud_AWS_Practitioner; 
+        }
+
+        if($current_student["Cloud-Mar-Zero"] != ""){
+            $icons["cloud_marco_zero"] = $cloud_marco_zero; 
+        }
+
+        if($current_student["Cloud-Virtualização-DC"] != ""){
+            $icons["cloud_virtualizacao"] = $cloud_virtualizacao; 
+        }    
+
+        if($current_student["AWS Zero to Hero"] != ""){
+            $icons["aws_zero"] = $aws_zero; 
+        }
+
+        if($current_student["AWS Associate"] != ""){
+            $icons["aws_associate"] = $aws_associate; 
+        }    
+
+        if($current_student["Ciber Marco 0"] != ""){
+            $icons["ciber_marco_zero"] = $ciber_marco_zero; 
+        }
+
+        if($current_student["NSE1"] != ""){
+            $icons["nse1"] = $nse1; 
+        }    
+
+        if($current_student["NSE2"] != ""){
+            $icons["nse2"] = $nse2; 
+        }
+
+        if($current_student["NSE3"] != ""){
+            $icons["nse3"] = $nse3; 
+        }
+
+        // if($current_student["NSE4"] != ""){
+        //     $icons["nse4"] = $nse4; 
+        // }
+
+        if($current_student["NSE7"] != ""){
+            $icons["nse7"] = $nse7; 
+        }    
+
+        if($current_student["MK-Marco-0"] != ""){
+            $icons["mk_marco_zero"] = $mk_marco_zero; 
+        }       
+
+        if($current_student["MK-MTCNA"] != ""){
+            $icons["mk_mtcna"] = $mk_mtcna; 
+        }       
+
+        if($current_student["MK-BGP-AVAN"] != ""){
+            $icons["mk_bgp"] = $mk_bgp; 
+        }       
+
+        if($current_student["MK-IPv6-AVAN"] != ""){
+            $icons["mk_ipv6"] = $mk_ipv6; 
+        }       
+
+        if($current_student["MTCRE"] != ""){
+            $icons["mtcre"] = $mtcre; 
+        }       
 
         $icon_per_student[$current_student["Email"]] = $icons;
     }
@@ -1142,6 +1242,21 @@ function add_icon_in_db_hall_da_fama($current_student_k, $current_student_v){
             'is_is' => $current_student_v['IS-IS'],
             'service_provider' => $current_student_v['SERVICE-PROVIDER'],
             'ccna' => $current_student_v['CCNA'],
+            'cloud_aws' => $current_student_v['Cloud-AWS'],
+            'cloud_marco_zero' => $current_student_v['cloud_marco_zero'],
+            'cloud_virtualizacao' => $current_student_v['cloud_virtualizacao'],
+            'aws_zero' => $current_student_v['aws_zero'],
+            'aws_associate' => $current_student_v['aws_associate'],
+            'ciber_marco_zero' => $current_student_v['ciber_marco_zero'],
+            'nse1' => $current_student_v['nse1'],
+            'nse2' => $current_student_v['nse2'],
+            'nse3' => $current_student_v['nse3'],
+            'nse7' => $current_student_v['nse7'],
+            'mk_marco_zero' => $current_student_v['mk_marco_zero'],
+            'mk_mtcna' => $current_student_v['mk_mtcna'],
+            'mk_bgp' => $current_student_v['mk_bgp'],
+            'mk_ipv6' => $current_student_v['mk_ipv6'],
+            'mtcre' => $current_student_v['mtcre']
             ) 
         );        
 }
@@ -1181,13 +1296,14 @@ function update_all_icon($google_sheet_data){
             $status_p = $wpdb->update(
                 $table_name,
                 array(
-                    'ccnp_enarsi' => $student_v["CCNP ENARSI"],
+                    'ccna' => $student_v['CCNA'],
                     'ccnp_encor' => $student_v['CCNP ENCOR'],
-                    'ipv6' => $student_v['IPV6'],
-                    'mpls' => $student_v['MPLS'],
+                    'ccnp_enarsi' => $student_v["CCNP ENARSI"],
                     'sd_wan' => $student_v['SD-WAN'],
                     'troubleshooting' => $student_v['TROUBLESHOOTING'],
                     'bgp'  => $student_v['BGP'],
+                    'ipv6' => $student_v['IPV6'],
+                    'mpls' => $student_v['MPLS'],
                     'data_center' => $student_v['DATA CENTER'],
                     'marco_zero' => $student_v['MARCO ZERO'],
                     'multicast' => $student_v['MULTICAST'],
@@ -1197,7 +1313,21 @@ function update_all_icon($google_sheet_data){
                     'wifi' => $student_v['WIFI'],
                     'is_is' => $student_v['IS-IS'],
                     'service_provider' => $student_v['SERVICE-PROVIDER'],
-                    'ccna' => $student_v['CCNA'],
+                    'cloud_aws' => $student_v['Cloud-AWS'],
+                    'cloud_marco_zero' => $student_v['cloud_marco_zero'],
+                    'cloud_virtualizacao' => $student_v['cloud_virtualizacao'],
+                    'aws_zero' => $student_v['aws_zero'],
+                    'aws_associate' => $student_v['aws_associate'],
+                    'ciber_marco_zero' => $student_v['ciber_marco_zero'],
+                    'nse1' => $student_v['nse1'],
+                    'nse2' => $student_v['nse2'],
+                    'nse3' => $student_v['nse3'],
+                    'nse7' => $student_v['nse7'],
+                    'mk_marco_zero' => $student_v['mk_marco_zero'],
+                    'mk_mtcna' => $student_v['mk_mtcna'],
+                    'mk_bgp' => $student_v['mk_bgp'],
+                    'mk_ipv6' => $student_v['mk_ipv6'],
+                    'mtcre' => $student_v['mtcre']
                 ),
                 array(
                     'id' => $result->id
